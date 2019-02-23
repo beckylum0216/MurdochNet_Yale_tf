@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import cv2
 from PIL import Image
 
 import ImageHeader
@@ -8,9 +9,12 @@ class Utility(object):
 
     def readGIFFile(self, filename, imgHdr = ImageHeader.ImageHeader()):
         frame = Image.open(filename).convert('L')
-        imgInput = np.true_divide(np.array(frame),255)
+        npImage = np.array(frame)
 
-        return imgInput
+        # below is for direct input into tensorflow
+        # imgInput = np.true_divide(np.array(frame),255)
+
+        return npImage
 
     def readFileLabel(self, dirname):
         self.filelist = []
@@ -46,3 +50,7 @@ class Utility(object):
                 mccall10.append(fileMatrix[aa][dd])
 
         return mccall70, mccall20, mccall10
+
+    def SaveImageFile(self, filepath, targetImg):
+        cv2.imwrite(filepath, targetImg)
+
