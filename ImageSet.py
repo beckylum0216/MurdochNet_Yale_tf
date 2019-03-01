@@ -90,7 +90,7 @@ class ImageSet:
         imgHeight = self.images[0].height
 
         # Declare outputs
-        imgArray = np.empty((numImages, imgWidth * imgHeight))
+        imgArray = np.empty((numImages, imgWidth * imgHeight), np.uint8)
         lblArray = np.empty((numImages, numLabels))
 
         curImg = 0
@@ -100,7 +100,7 @@ class ImageSet:
             imgData = img.data.flatten()
             imgArray[curImg] = imgData
             # Add label vector
-            lblArray[curImg] = img.LabelVector(self.GetUniqueLabelCount())
+            lblArray[curImg] = img.LabelVector(numLabels)
             curImg += 1
 
         return {'data': imgArray, 'labels': lblArray}
@@ -113,8 +113,30 @@ class ImageSet:
                 self.LoadImage(os.path.join(root, filename))
 
 
+    def GetRandomImages(self, indexes, numofclass):
+        # Get a range of images as a single tensorflow compatible array
+        # Returns a dict
+        # 'data': image data in a numImages x pixelsInImage array
+        # 'labels': a label for each image in a numImages x numLabels array
+        numImages = len(indexes)
+        imgWidth = self.images[0].width
+        imgHeight = self.images[0].height
 
+        # Declare outputs
+        imgArray = np.empty((numImages, imgWidth * imgHeight), np.uint8)
+        lblArray = np.empty((numImages, numofclass))
 
+        curImg = 0
+        for imgIndex in indexes:
+            # Reshape image data to match what tf expects
+            img = self.images[imgIndex]
+            imgData = img.data.flatten()
+            imgArray[curImg] = imgData
+            # Add label vector
+            lblArray[curImg] = img.LabelVector(numofclass)
+            curImg += 1
+
+        return {'data': imgArray, 'labels': lblArray}
 
 
 

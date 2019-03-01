@@ -24,36 +24,41 @@ def main():
         imgprocess = ProcessImage(imgHdr.imgWidth, imgHdr.imgHeight, img)
         imgprocess.DetectFace()
         croppedImg = imgprocess.CropImage()
+        croppedPath = "./Yale/croppedfaces/" + filename[ii] + ".jpg"
+        ut.SaveImageFile(croppedPath, croppedImg)
         scaledImg = imgprocess.ScaleImage(croppedImg, 160, 160)
         gaborImg = imgprocess.ApplyGaborFilter(scaledImg)
         filePath = "./Yale/gaborfaces/" + filename[ii] + ".jpg"
         ut.SaveImageFile(filePath, gaborImg)
 
     # print("filenames: ", filename)
-    dirname = "./Yale/yalefaces/"
+    dirname = "./Yale/gaborfaces/"
     gaborname = ut.readFileLabel(dirname)
-    file70, file20, file10 = ut.McCallRule(gaborname)
+    file70, file20, file10 = ut.McCallRuleWrap(gaborname)
+    pareto90, pareto10 = ut.ParetoRule(gaborname)
+    randomImg = ut.RandomImg(gaborname)
 
     train_images = ImageSet()
     #print(test_images.GetImageCount())
-    train_images.LoadFromList(file70, 'Yale/yalefaces')
+    train_images.LoadFromList(pareto90, 'Yale/gaborfaces')
     #print(test_images.GetImageCount())
     imgs = train_images.GetImageRange(range(0, train_images.GetImageCount()))
 
     test_images = ImageSet()
-    test_images.LoadFromList(file20, 'Yale/yalefaces')
+    test_images.LoadFromList(pareto10, 'Yale/gaborfaces')
     testImg = test_images.GetImageRange(range(0, test_images.GetImageCount()))
-
 
     save_base = os.path.join('.', 'saves')
     nt = NeuralNet(imgs['data'].shape[1],
                    train_images.GetUniqueLabelCount())
-    for epoch in [2400]:
+    for epoch in [1600]:
+        matrixPath = "confusion/confusion" + str(epoch) + ".txt"
+        reportPath = "classification/classreport" + str(epoch) + ".txt"
         save_path = os.path.join(save_base, f'save_{str(epoch).zfill(6)}')
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        saved_path = nt.CheckNet( testImg, imgs, epoch, os.path.join(save_path, 'yale'))
+        saved_path = nt.CheckNet( testImg, imgs, epoch, os.path.join(save_path, 'yale'), matrixPath, reportPath)
 
         print(saved_path)
 
@@ -68,8 +73,8 @@ def main():
     # nt.TestNet(testImg, path)
 
     # cv2.imshow("GIF Image", img)
-    # cv2.imshow("Filtered Image", filtered_img)
-    # cv2.waitKey()
+
+    ut.DisplayImage(pareto10, "./Yale/croppedfaces")
 
 
 

@@ -4,6 +4,8 @@ from tensorflow.python.tools import inspect_checkpoint as chkp
 from sklearn.metrics import confusion_matrix as cm
 from sklearn.metrics import classification_report as cr
 
+import Utility
+
 
 class NeuralNet:
     # Encapsulates a neural net trainer
@@ -151,7 +153,7 @@ class NeuralNet:
 
 
 
-    def CheckNet(self, testset, imageset, epoch, basename):
+    def CheckNet(self, testset, imageset, epoch, basename, matrixFile, reportFile):
         sess = tf.Session()
         # graph inputs
         x_inputs = tf.placeholder(tf.float32, shape=[None, self.numInputNodes], name='x_inputs')
@@ -238,13 +240,14 @@ class NeuralNet:
 
         classes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
-        # tfConfusionMatrix = tf.confusion_matrix(labels=y_label, predictions=prediction)
-
         confusionMatrix = cm(labely, predy, labels=range(15))
 
         report = cr(labely, predy, labels=range(15))
 
-        #print("tf confusion matrix: ", sess.run(tfConfusionMatrix))
+        ut = Utility.Utility()
+
+        ut.SaveConfusionMatrix(str(confusionMatrix), matrixFile)
+        ut.SaveClassification(str(report), reportFile)
 
         print("confusion sk matrix: ", confusionMatrix)
 
