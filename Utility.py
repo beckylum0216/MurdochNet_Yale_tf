@@ -3,6 +3,7 @@ import os
 import cv2
 import random
 from PIL import Image
+import re
 
 import ImageHeader
 
@@ -66,16 +67,19 @@ class Utility(object):
             print("file list: ", fileMatrix[jj][kk])
 
         for aa in range(15):
-            for bb in range(9, 11):
+            for bb in range(1, 9):
                 mccall70.append(fileMatrix[aa][bb])
 
-            for ee in range(0, 6):
+            for ee in range(0, 0):
                 mccall70.append(fileMatrix[aa][ee])
 
-            for cc in range(6, 8):
-                mccall20.append((fileMatrix[aa][cc]))
+            for cc in range(9, 11):
+                mccall20.append(fileMatrix[aa][cc])
 
-            for dd in range(8, 9):
+            for ff in range(0, 0):
+                mccall20.append(fileMatrix[aa][ff])
+
+            for dd in range(0, 1):
                 mccall10.append(fileMatrix[aa][dd])
 
 
@@ -94,13 +98,13 @@ class Utility(object):
             print("file list: ", fileMatrix[jj][kk])
 
         for aa in range(15):
-            for bb in range(5,11):
-                pareto90.append(fileMatrix[aa][bb])
+            # for bb in range(10,11):
+            #     pareto90.append(fileMatrix[aa][bb])
 
-            for dd in range(0,4):
+            for dd in range(0,10):
                 pareto90.append((fileMatrix[aa][dd]))
 
-            for cc in range(4,5):
+            for cc in range(10,11):
                 pareto10.append((fileMatrix[aa][cc]))
 
         return pareto90, pareto10
@@ -108,7 +112,7 @@ class Utility(object):
 
     def RandomImg(self, filelist=[]):
         randomImg = []
-        for ii in range(15):
+        for ii in range(165):
             imgIndex = random.randrange(165)
             randomImg.append(filelist[imgIndex])
 
@@ -117,10 +121,15 @@ class Utility(object):
     def SaveImageFile(self, filepath, targetImg):
         cv2.imwrite(filepath, targetImg)
 
+
     def DisplayImage(self, targetList, dirname):
         for filename in targetList:
+            targetName = os.path.splitext(filename)[0]
             frame = Image.open(dirname +'/'+ filename)
             npImage = np.array(frame)
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            cv2.putText(npImage, str(targetName), (10, 130), font, 0.5, (0, 255, 0), 1)
+            #cv2.putText(npImage, "Hi all...", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 200, 200), 4)
             cv2.imshow("Labeled image", npImage)
             cv2.waitKey()
             cv2.destroyAllWindows()
@@ -137,3 +146,28 @@ class Utility(object):
         classFile = open(filepath, "w")
         classFile.writelines(targetReport)
         classFile.close()
+
+    def DisplayWithOverlay(self, targetImage, imgDir, targetOverlay, overlayDir):
+        frame = Image.open(imgDir+"/"+targetImage).convert('L')
+
+        overlay = Image.open(overlayDir+"/"+targetOverlay)
+
+        backGround = np.array(frame, np.uint8)
+        backData = cv2.cvtColor(backGround, cv2.COLOR_GRAY2BGRA)
+        foreGround = np.array(overlay)
+
+        foreData = cv2.cvtColor(foreGround, cv2.COLOR_RGBA2BGRA)
+        cv2.imshow("fore ground", foreData)
+
+        backWidth, backHeight = backGround.shape
+
+        finalForeData = cv2.resize(foreData, (backWidth, backHeight))
+
+        # outImage = cv2.add(finalForeData, backData)
+
+        alpha = 0.5
+
+        outImage = cv2.addWeighted(backData, alpha,  finalForeData, 1 - alpha, 0)
+
+        cv2.imshow("Image with overlay", outImage)
+        cv2.waitKey(0)

@@ -28,29 +28,31 @@ def main():
         ut.SaveImageFile(croppedPath, croppedImg)
         scaledImg = imgprocess.ScaleImage(croppedImg, 160, 160)
         gaborImg = imgprocess.ApplyGaborFilter(scaledImg)
-        filePath = "./Yale/gaborfaces/" + filename[ii] + ".jpg"
-        ut.SaveImageFile(filePath, gaborImg)
+        filePath = "./Yale/scaledfaces/" + filename[ii] + ".jpg"
+        ut.SaveImageFile(filePath, scaledImg)
 
     # print("filenames: ", filename)
-    dirname = "./Yale/gaborfaces/"
+    dirname = "./Yale/scaledfaces/"
     gaborname = ut.readFileLabel(dirname)
+    randomImg = ut.RandomImg(gaborname)
     file70, file20, file10 = ut.McCallRuleWrap(gaborname)
     pareto90, pareto10 = ut.ParetoRule(gaborname)
-    randomImg = ut.RandomImg(gaborname)
+
 
     train_images = ImageSet()
     #print(test_images.GetImageCount())
-    train_images.LoadFromList(pareto90, 'Yale/gaborfaces')
+    train_images.LoadFromList(file70, 'Yale/scaledfaces')
     #print(test_images.GetImageCount())
     imgs = train_images.GetImageRange(range(0, train_images.GetImageCount()))
 
     test_images = ImageSet()
-    test_images.LoadFromList(pareto10, 'Yale/gaborfaces')
+    test_images.LoadFromList(file20, 'Yale/scaledfaces')
     testImg = test_images.GetImageRange(range(0, test_images.GetImageCount()))
 
     save_base = os.path.join('.', 'saves')
     nt = NeuralNet(imgs['data'].shape[1],
                    train_images.GetUniqueLabelCount())
+
     for epoch in [1600]:
         matrixPath = "confusion/confusion" + str(epoch) + ".txt"
         reportPath = "classification/classreport" + str(epoch) + ".txt"
@@ -74,8 +76,11 @@ def main():
 
     # cv2.imshow("GIF Image", img)
 
-    ut.DisplayImage(pareto10, "./Yale/croppedfaces")
 
+    ut.DisplayImage(file20, "./Yale/croppedfaces")
+
+    # print("Display with overlay")
+    #ut.DisplayWithOverlay(file20[5], "./Yale/croppedfaces", "TARGA.tga", "./assets/logos")
 
 
 if __name__ == '__main__':

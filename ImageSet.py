@@ -99,6 +99,7 @@ class ImageSet:
             img = self.images[imgIndex]
             imgData = img.data.flatten()
             imgArray[curImg] = imgData
+
             # Add label vector
             lblArray[curImg] = img.LabelVector(numLabels)
             curImg += 1

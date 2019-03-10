@@ -1,8 +1,10 @@
 import tensorflow as tf
+import tensorflow.contrib.layers as tcl
 import numpy as np
 from tensorflow.python.tools import inspect_checkpoint as chkp
 from sklearn.metrics import confusion_matrix as cm
 from sklearn.metrics import classification_report as cr
+from sklearn.metrics import roc_curve as rc
 
 import Utility
 
@@ -161,13 +163,13 @@ class NeuralNet:
 
         # weights
         weightOne = tf.Variable(tf.random_normal([self.numInputNodes,
-                                                  self.numHiddenNode1]), name='weightOne')
+                                                  self.numHiddenNode1]), name= 'weightOne')
         weightTwo = tf.Variable(tf.random_normal([self.numHiddenNode1,
                                                   self.numHiddenNode2]), name='weightTwo')
         weightThree = tf.Variable(tf.random_normal([self.numHiddenNode2,
-                                                  self.numHiddenNode3]), name='weightThree')
+                                                    self.numHiddenNode3]), name='weightThree')
         weightFour = tf.Variable(tf.random_normal([self.numHiddenNode3,
-                                                    self.numHiddenNode4]), name='weightFour')
+                                                   self.numHiddenNode4]), name='weightFour')
         weightOut = tf.Variable(tf.random_normal([self.numHiddenNode4,
                                                   self.numOutputNodes]), name='weightOut')
         # biases
@@ -237,12 +239,16 @@ class NeuralNet:
             predy.append(check[ii].argmax())
             labely.append(check_label[ii].argmax())
             print("predy: ", predy[ii], " labely: ", labely[ii])
+            #rocCurve = rc(check_label[ii], check[ii], pos_label=1)
 
         classes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
         confusionMatrix = cm(labely, predy, labels=range(15))
 
         report = cr(labely, predy, labels=range(15))
+
+        # print("ROC Curve")
+        # print(rocCurve)
 
         ut = Utility.Utility()
 
