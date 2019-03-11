@@ -4,6 +4,7 @@ from PIL import  Image
 import ImageHeader
 import Utility
 import os
+import random
 from ImageSet import ImageSet
 from Monolithic import NeuralNet
 from Preprocessor import ProcessImage
@@ -28,12 +29,13 @@ def main():
         ut.SaveImageFile(croppedPath, croppedImg)
         scaledImg = imgprocess.ScaleImage(croppedImg, 160, 160)
         gaborImg = imgprocess.ApplyGaborFilter(scaledImg)
-        filePath = "./Yale/scaledfaces/" + filename[ii] + ".jpg"
-        ut.SaveImageFile(filePath, scaledImg)
+        filePath = "./Yale/gaborfaces/" + filename[ii] + ".jpg"
+        ut.SaveImageFile(filePath, gaborImg)
 
     # print("filenames: ", filename)
-    dirname = "./Yale/scaledfaces/"
+    dirname = "./Yale/gaborfaces/"
     gaborname = ut.readFileLabel(dirname)
+    # random.shuffle(gaborname)
     randomImg = ut.RandomImg(gaborname)
     file70, file20, file10 = ut.McCallRuleWrap(gaborname)
     pareto90, pareto10 = ut.ParetoRule(gaborname)
@@ -41,21 +43,21 @@ def main():
 
     train_images = ImageSet()
     #print(test_images.GetImageCount())
-    train_images.LoadFromList(file70, 'Yale/scaledfaces')
+    train_images.LoadFromList(pareto90, 'Yale/gaborfaces')
     #print(test_images.GetImageCount())
-    imgs = train_images.GetImageRange(range(0, train_images.GetImageCount()))
+    imgs = train_images.GetRandomImages(range(0, train_images.GetImageCount()),15)
 
     test_images = ImageSet()
-    test_images.LoadFromList(file20, 'Yale/scaledfaces')
-    testImg = test_images.GetImageRange(range(0, test_images.GetImageCount()))
+    test_images.LoadFromList(pareto10, 'Yale/gaborfaces')
+    testImg = test_images.GetRandomImages(range(0, test_images.GetImageCount()),15)
 
     save_base = os.path.join('.', 'saves')
     nt = NeuralNet(imgs['data'].shape[1],
                    train_images.GetUniqueLabelCount())
 
-    for epoch in [1600]:
-        matrixPath = "confusion/confusion" + str(epoch) + ".txt"
-        reportPath = "classification/classreport" + str(epoch) + ".txt"
+    for epoch in [1600, 1200, 800, 400]:
+        matrixPath = "confusion/confusion" + str(epoch) + "-pareto10-11-gabor.txt"
+        reportPath = "classification/classreport" + str(epoch) + "-pareto10-11-gabor.txt"
         save_path = os.path.join(save_base, f'save_{str(epoch).zfill(6)}')
         if not os.path.exists(save_path):
             os.makedirs(save_path)
@@ -77,7 +79,7 @@ def main():
     # cv2.imshow("GIF Image", img)
 
 
-    ut.DisplayImage(file20, "./Yale/croppedfaces")
+    ut.DisplayImage(pareto10, "./Yale/croppedfaces")
 
     # print("Display with overlay")
     #ut.DisplayWithOverlay(file20[5], "./Yale/croppedfaces", "TARGA.tga", "./assets/logos")

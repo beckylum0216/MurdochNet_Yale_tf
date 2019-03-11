@@ -194,6 +194,7 @@ class NeuralNet:
         optimiser = tf.train.AdamOptimizer(self.learnRate).minimize(loss, name='optimiser')
         correct_prediction = tf.equal(tf.argmax(prediction, 1),
                                       tf.argmax(y_label, 1), name='correct_prediction')
+
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='accuracy')
 
         # actual

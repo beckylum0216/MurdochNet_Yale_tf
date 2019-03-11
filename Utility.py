@@ -98,13 +98,13 @@ class Utility(object):
             print("file list: ", fileMatrix[jj][kk])
 
         for aa in range(15):
-            # for bb in range(10,11):
-            #     pareto90.append(fileMatrix[aa][bb])
+            for bb in range(10,11):
+                 pareto90.append(fileMatrix[aa][bb])
 
-            for dd in range(0,10):
+            for dd in range(0, 9):
                 pareto90.append((fileMatrix[aa][dd]))
 
-            for cc in range(10,11):
+            for cc in range(9, 10):
                 pareto10.append((fileMatrix[aa][cc]))
 
         return pareto90, pareto10
