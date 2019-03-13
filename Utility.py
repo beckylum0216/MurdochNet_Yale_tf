@@ -67,19 +67,19 @@ class Utility(object):
             print("file list: ", fileMatrix[jj][kk])
 
         for aa in range(15):
-            for bb in range(1, 9):
+            for bb in range(5, 11):
                 mccall70.append(fileMatrix[aa][bb])
 
-            for ee in range(0, 0):
+            for ee in range(0, 2):
                 mccall70.append(fileMatrix[aa][ee])
 
-            for cc in range(9, 11):
+            for cc in range(2, 4):
                 mccall20.append(fileMatrix[aa][cc])
 
             for ff in range(0, 0):
                 mccall20.append(fileMatrix[aa][ff])
 
-            for dd in range(0, 1):
+            for dd in range(4, 5):
                 mccall10.append(fileMatrix[aa][dd])
 
 
@@ -171,3 +171,5 @@ class Utility(object):
 
         cv2.imshow("Image with overlay", outImage)
         cv2.waitKey(0)
+
+

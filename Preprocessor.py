@@ -61,7 +61,7 @@ class ProcessImage(object):
         return resizedImg
 
     def ApplyGaborFilter(self, targetImage):
-        gabor_filter = cv2.getGaborKernel((self.width, self.height), 8.0, np.pi / 4, 10.0, 0.5, 0, ktype=cv2.CV_32F)
+        gabor_filter = cv2.getGaborKernel((self.width, self.height), 2.0, np.pi/8, 20.0, 0.5, 0, ktype=cv2.CV_32F)
         self.gaborImg = cv2.filter2D(targetImage, cv2.CV_8UC3, gabor_filter)
 
         #cv2.imshow("cropped gabor: ", self.gaborImg)
